@@ -67,9 +67,25 @@ if(Test-Path -Path $source) {
 	Write-Warning "Path $source does not exist"
 }
 
-if($LastExitCode -gt 8) {
+if ($LASTEXITCODE -eq 8)
+{
+	Write-Error "Some files or directories could not be copied (copy errors occurred and the retry limit was exceeded). Check these errors further."
 	exit 1
 }
-else {
+
+if ($LASTEXITCODE -eq 16)
+{
+	Write-Error "Serious error. Robocopy did not copy any files. Either a usage error or an error due to insufficient access privileges on the source or destination directories."
+	exit 1
+}
+
+if ($LASTEXITCODE -gt 16)
+{
+	Write-Error "Unknown error! Please see log for more details!"
+	exit 1
+}
+
+if($LASTEXITCODE -le 7) {
+	Write-Host "Copying was finished. Please see log for more details."
 	exit 0
 }
